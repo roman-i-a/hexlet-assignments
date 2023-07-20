@@ -20,6 +20,8 @@ public class FileKV implements KeyValueStorage {
         var map = this.toMap();
         if (map.containsKey(key)) {
             map.replace(key, value);
+        } else {
+            map.put(key, value);
         }
 
         var s = Utils.serialize(map);
@@ -28,15 +30,17 @@ public class FileKV implements KeyValueStorage {
 
     @Override
     public void unset(String key) {
+        var map = this.toMap();
+        map.remove(key);
 
+        var s = Utils.serialize(map);
+        Utils.writeFile(filepath, s);
     }
 
     @Override
     public String get(String key, String defaultValue) {
         var map = this.toMap();
-        return map.get(key) == null
-                ? defaultValue
-                : map.get(key);
+        return map.getOrDefault(key, defaultValue);
     }
 
     @Override
